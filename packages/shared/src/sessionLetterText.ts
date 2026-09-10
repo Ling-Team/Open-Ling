@@ -9,18 +9,28 @@ export function isSessionLetterSalutation(paragraph: string) {
     || /^Dear\s+[^\n,]{1,40},$/iu.test(text);
 }
 
+function isLetterOpening(line: string, displayName: string | undefined) {
+  const text = line.trim().replace(/^#+\s*/, "").replace(/\*\*|__/g, "").trim();
+  return isSessionLetterSalutation(text)
+    || (!!displayName && (text === `${displayName},` || text === `${displayName}：` || text === `${displayName}:`))
+    || /^(?:(?:用户|来访者)(?:的)?(?:称呼|姓名)|称呼)\s*[：:][^\n]*$/u.test(text)
+    || /^(?:Client's preferred form of address|Preferred name|User name)\s*:[^\n]*$/iu.test(text);
+}
+
 export function formatSessionLetterMarkdown(
   markdown: string,
   clientDisplayName: string | undefined,
   locale: "zh-CN" | "en-US"
 ) {
-  const paragraphs = normalizeSessionLetterMarkdown(markdown)
+  const displayName = clientDisplayName?.trim();
+  const lines = normalizeSessionLetterMarkdown(markdown).replace(/\r\n?/g, "\n").trim().split("\n");
+  // Only clean the opening: labels quoted later in the letter are part of its content.
+  // Iterate because saved letters may already contain both an added name and a leaked label.
+  while (lines.length && (!lines[0].trim() || isLetterOpening(lines[0], displayName))) lines.shift();
+  const paragraphs = lines.join("\n")
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.replace(/^#+\s*/, "").trim())
     .filter(Boolean);
-  if (paragraphs[0] && isSessionLetterSalutation(paragraphs[0])) paragraphs.shift();
-
-  const displayName = clientDisplayName?.trim();
   if (displayName) paragraphs.unshift(locale === "en-US" ? `${displayName},` : `${displayName}：`);
   return paragraphs.join("\n\n");
 }

@@ -30,7 +30,8 @@ describe("model capabilities", () => {
 
   it("recognizes the new DeepSeek vision model and other known multimodal families", () => {
     expect(modelSupportsImageInput("deepseek-v4-flash-vision-exp")).toBe(true);
-    expect(modelSupportsImageInput("deepseek-v4-flash")).toBe(false);
+    expect(modelSupportsImageInput("deepseek-v4-flash")).toBe(true);
+    expect(modelSupportsImageInput("deepseek-flash")).toBe(true);
     expect(modelSupportsImageInput("kimi-k2.5")).toBe(true);
     expect(modelSupportsImageInput("qwen3.7-plus")).toBe(true);
   });

@@ -1,6 +1,6 @@
 import type { UserSettings } from "@shared/index";
 
-export const DEFAULT_CONCEPTUALIZATION_MODEL_NAME = "deepseek-v4-pro";
+export const DEFAULT_CONCEPTUALIZATION_MODEL_NAME = "deepseek-flash";
 
 export function resolveConceptualizationModelSettings(settings: UserSettings) {
   const modelName =

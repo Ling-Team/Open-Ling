@@ -74,15 +74,6 @@ const cursorThemeOptions: Array<{
   { id: "e", label: ["琥珀软糖", "Amber gummy"], description: ["暖黄柔和", "Soft warm amber"], pointer: cursorEDefault, hand: cursorEHand, text: cursorEText }
 ];
 
-function modelOptionLabel(model: { id: string; name: string }, locale: SupportedLocale) {
-  if (model.id === "deepseek-v4-flash-vision-exp") {
-    return `${model.name}${locale === "en-US" ? " (vision, experimental)" : "（识图·实验版）"}`;
-  }
-  if (model.id === "deepseek-v4-flash" && !model.name.includes("推荐")) {
-    return `${model.name}${locale === "en-US" ? " (stable)" : "（稳定版）"}`;
-  }
-  return model.name;
-}
 
 function getProviderPresentation(apiBaseUrl: string, locale: SupportedLocale) {
   let hostname = "";
@@ -481,7 +472,7 @@ function ModelAccessSettings() {
       : api.remoteApiBaseUrl || "https://api.deepseek.com";
     const modelName = kind === "local"
       ? api.localModelName || ""
-      : api.remoteModelName || "deepseek-v4-flash-vision-exp";
+      : api.remoteModelName || "deepseek-flash";
     useSettingsStore.setState({ availableModels: [], modelListStatus: "idle", connectionStatus: "idle", message: "" });
     updateApi({
       ...leavingProfile,
@@ -507,7 +498,7 @@ function ModelAccessSettings() {
 
   function selectRemoteProvider(provider: "deepseek" | "kimi" | "glm" | "qwen" | "custom") {
     const preset = {
-      deepseek: { apiBaseUrl: "https://api.deepseek.com", modelName: "deepseek-v4-flash-vision-exp" },
+      deepseek: { apiBaseUrl: "https://api.deepseek.com", modelName: "deepseek-flash" },
       kimi: { apiBaseUrl: "https://api.moonshot.cn/v1", modelName: "kimi-k2.5" },
       glm: { apiBaseUrl: "https://open.bigmodel.cn/api/paas/v4", modelName: "glm-5.2" },
       qwen: { apiBaseUrl: "https://dashscope.aliyuncs.com/compatible-mode/v1", modelName: "qwen3.7-plus" },
@@ -657,7 +648,7 @@ function ModelAccessSettings() {
                     {!api.modelName && <option value="">{l("先读取可用模型", "Load available models first")}</option>}
                     {modelOptions.map((model) => (
                       <option key={model.id} value={model.id}>
-                        {modelOptionLabel(model, locale)}{locale === "zh-CN" ? `（${model.id}）` : ` (${model.id})`}
+                        {model.name}{locale === "zh-CN" ? `（${model.id}）` : ` (${model.id})`}
                       </option>
                     ))}
                   </select>
@@ -695,9 +686,9 @@ function ModelAccessSettings() {
                     value={backstageModels.conceptualizationModelName ?? ""}
                   >
                     <option value="">
-                      {providerPresentation.isDeepSeek ? l("默认 DeepSeek V4 Pro（推荐）", "Default: DeepSeek V4 Pro (recommended)") : l("跟随会谈模型（推荐）", "Use the session model (recommended)")}
+                      {providerPresentation.isDeepSeek ? l("默认 DeepSeek V4.1 Flash（推荐）", "Default: DeepSeek V4.1 Flash (recommended)") : l("跟随会谈模型（推荐）", "Use the session model (recommended)")}
                     </option>
-                    {modelOptions.map((model) => <option key={model.id} value={model.id}>{modelOptionLabel(model, locale)}{locale === "zh-CN" ? `（${model.id}）` : ` (${model.id})`}</option>)}
+                    {modelOptions.map((model) => <option key={model.id} value={model.id}>{model.name}{locale === "zh-CN" ? `（${model.id}）` : ` (${model.id})`}</option>)}
                   </select>
                 </label>
                 <label className="system-field wide">
@@ -707,7 +698,7 @@ function ModelAccessSettings() {
                     value={backstageModels.letterModelName ?? ""}
                   >
                     <option value="">{l("跟随会谈整理模型（推荐）", "Use the session-organization model (recommended)")}</option>
-                    {modelOptions.map((model) => <option key={model.id} value={model.id}>{modelOptionLabel(model, locale)}{locale === "zh-CN" ? `（${model.id}）` : ` (${model.id})`}</option>)}
+                    {modelOptions.map((model) => <option key={model.id} value={model.id}>{model.name}{locale === "zh-CN" ? `（${model.id}）` : ` (${model.id})`}</option>)}
                   </select>
                 </label>
               </section>

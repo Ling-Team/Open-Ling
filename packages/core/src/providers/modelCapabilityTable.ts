@@ -43,7 +43,7 @@ export const SAMPLING_PROFILES: Record<SamplingProfile, SamplingParams> = {
 
 const GLM_THINKING = /^glm-(?:5\.(?:[2-9]|[1-9]\d)|[6-9])/;
 const KIMI_THINKING = /^kimi-k2[.-]/;
-const DEEPSEEK_REASONER = /^(deepseek-reasoner|deepseek-r1(?!-distill)|deepseek-v4-(?:flash|pro))/;
+const DEEPSEEK_REASONER = /^(deepseek-flash|deepseek-reasoner|deepseek-r1(?!-distill)|deepseek-v4-(?:flash|pro))/;
 const DEEPSEEK_CHAT = /^deepseek-(chat|v3)/;
 const QWEN3 = /^qwen3[.:-]/;
 const OPENAI_REASONING = /^(?:gpt-5|o[1-9])/;

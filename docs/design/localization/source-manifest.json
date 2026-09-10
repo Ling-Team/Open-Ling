@@ -89,7 +89,7 @@
       "id": "prompt.task.session-letter",
       "source": "packages/core/src/prompts/tasks/session-letter.md",
       "translation": "packages/core/src/prompts/en-US/tasks/session-letter.md",
-      "sourceHash": "3df1625fb574fcac6ca149a883f227cd4b82e5ab223ffded185e75ef6a178e79"
+      "sourceHash": "3c4fc4c8547031e62264af0f3cead65fa1fa1a682acce2dafccfcf6fb0b26599"
     },
     {
       "id": "content.informed-consent",

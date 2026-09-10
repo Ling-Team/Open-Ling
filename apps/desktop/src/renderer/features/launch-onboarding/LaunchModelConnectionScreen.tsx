@@ -6,7 +6,7 @@ import { LaunchWelcomeShell } from "../launch-welcome";
 
 const DEEPSEEK_API_KEYS_URL = "https://platform.deepseek.com/api_keys";
 const DEFAULT_API_BASE_URL = "https://api.deepseek.com";
-const DEFAULT_MODEL_NAME = "deepseek-v4-flash-vision-exp";
+const DEFAULT_MODEL_NAME = "deepseek-flash";
 
 type ConnectionChoice = "local" | "remote";
 type LocalRuntimeChoice = "ollama" | "lm-studio";

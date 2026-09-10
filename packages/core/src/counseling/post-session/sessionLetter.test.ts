@@ -144,4 +144,21 @@ describe("session letter", () => {
 
     expect(letter.letterMd).toBe("我听见你今天说到疲惫。\n\n程灵");
   });
+
+  it.each(["小满", undefined])("cleans a model's leaked address label before saving (name: %s)", async (clientDisplayName) => {
+    const provider: LlmProvider = {
+      complete: async () => ({ content: JSON.stringify({ letterMd: "用户称呼：小满\n我听见你今天说到疲惫。\n\n程灵" }) }),
+      stream: async function* () { yield { type: "status", status: "done" }; }
+    };
+    const letter = await createSessionLetterDraft({
+      provider,
+      sessionId: "s3",
+      counselorId: "chengling",
+      counselorName: "程灵",
+      clientDisplayName,
+      sessionMessages: [],
+      modelName: "test-model"
+    });
+    expect(letter.letterMd).toBe(`${clientDisplayName ? "小满：\n\n" : ""}我听见你今天说到疲惫。\n\n程灵`);
+  });
 });

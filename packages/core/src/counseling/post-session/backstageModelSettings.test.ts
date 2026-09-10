@@ -2,7 +2,7 @@
 import { describe, expect, it } from "vitest";
 import type { UserSettings } from "@shared/index";
 import {
-  DEFAULT_CONCEPTUALIZATION_MODEL_NAME,
+  resolveSessionLetterModelSettings,
   resolveConceptualizationModelSettings
 } from "./backstageModelSettings";
 
@@ -17,11 +17,15 @@ const baseSettings: UserSettings = {
 };
 
 describe("backstage model settings", () => {
-  it("uses deepseek v4 pro as the default conceptualization model", () => {
+  it("uses deepseek v4.1 flash as the default conceptualization model", () => {
     expect(resolveConceptualizationModelSettings(baseSettings)).toEqual({
       apiBaseUrl: "https://api.deepseek.com",
-      modelName: DEFAULT_CONCEPTUALIZATION_MODEL_NAME
+      modelName: "deepseek-flash"
     });
+  });
+
+  it("uses Flash for letters by default", () => {
+    expect(resolveSessionLetterModelSettings(baseSettings).modelName).toBe("deepseek-flash");
   });
 
   it("uses configured conceptualization model when present", () => {
@@ -48,7 +52,7 @@ describe("backstage model settings", () => {
       })
     ).toEqual({
       apiBaseUrl: "https://api.deepseek.com",
-      modelName: DEFAULT_CONCEPTUALIZATION_MODEL_NAME
+      modelName: "deepseek-flash"
     });
   });
 

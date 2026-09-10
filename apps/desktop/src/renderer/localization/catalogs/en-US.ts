@@ -338,7 +338,7 @@ export const enUS: Record<TranslationKey, string> = {
   "launch.model.keyPlaceholder": "Paste an API key beginning with sk-",
   "launch.model.show": "Show",
   "launch.model.hide": "Hide",
-  "launch.model.configuredNote": "DeepSeek's official endpoint and the recommended DeepSeek V4 Flash configuration are already selected.",
+  "launch.model.configuredNote": "DeepSeek's official endpoint and the recommended DeepSeek V4.1 Flash configuration are already selected.",
   "launch.model.actionsLabel": "Model connection actions",
   "launch.model.connecting": "Connecting…",
   "launch.model.connect": "Connect and continue",

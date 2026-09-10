@@ -125,8 +125,8 @@ describe("settingsStore", () => {
       remoteModelName: "deepseek-v4-flash",
       modelAssignments: {
         conversation: "deepseek-v4-flash",
-        caseConceptualization: "deepseek-v4-flash-vision-exp",
-        consultationTeam: "deepseek-v4-flash-vision-exp"
+        caseConceptualization: "deepseek-flash",
+        consultationTeam: "deepseek-flash"
       }
     });
     expect(useSettingsStore.getState().profile).toEqual({
@@ -398,6 +398,31 @@ describe("settingsStore", () => {
     expect(useSettingsStore.getState().modelListStatus).toBe("loaded");
   });
 
+  it("replaces the model list with each fresh official response", async () => {
+    const latest = [{ id: "deepseek-flash", name: "Official Flash" }, { id: "future-model", name: "Future model" }];
+    const listModels = vi.fn()
+      .mockResolvedValueOnce({ ok: true, data: { models: latest, source: "remote", message: "loaded" } })
+      .mockResolvedValueOnce({ ok: true, data: { models: [latest[1]], source: "remote", message: "loaded" } });
+    vi.stubGlobal("lingDesktop", { settings: { listModels } });
+    await useSettingsStore.getState().loadModels();
+    expect(useSettingsStore.getState().availableModels).toEqual(latest);
+    await useSettingsStore.getState().loadModels();
+    expect(useSettingsStore.getState().availableModels).toEqual([latest[1]]);
+    expect(useSettingsStore.getState().api.modelName).toBe("future-model");
+  });
+
+  it.each(["failed", "empty", "remote"])("does not substitute built-in models for an empty %s response", async (source) => {
+    const previous = [{ id: "custom-model", name: "Custom" }];
+    useSettingsStore.setState({ availableModels: previous });
+    const api = useSettingsStore.getState().api;
+    const listModels = vi.fn(async () => ({ ok: true, data: { models: [], source, message: "No models" } }));
+    vi.stubGlobal("lingDesktop", { settings: { listModels } });
+    await useSettingsStore.getState().loadModels();
+    expect(useSettingsStore.getState().availableModels).toEqual(source === "remote" ? [] : previous);
+    expect(useSettingsStore.getState().api).toEqual(api);
+    expect(useSettingsStore.getState().modelListStatus).toBe(source === "failed" ? "failed" : "empty");
+  });
+
   it("keeps a clear error message when saving model settings fails", async () => {
     vi.stubGlobal("lingDesktop", {
       settings: {
@@ -613,7 +638,7 @@ describe("settingsStore", () => {
 
     useSettingsStore.getState().discardUnsavedChanges();
 
-    expect(useSettingsStore.getState().api.modelName).toBe("deepseek-v4-flash-vision-exp");
+    expect(useSettingsStore.getState().api.modelName).toBe("deepseek-flash");
     expect(useSettingsStore.getState().profile.displayName).toBe("");
     expect(useSettingsStore.getState().counseling.bringPastUnderstandingToNewSessions).toBe(true);
     expect(useSettingsStore.getState().appearance).toEqual({ textSize: "standard", lineSpacing: "standard", cursorTheme: "d" });

@@ -336,7 +336,7 @@ export const zhCN = {
   "launch.model.keyPlaceholder": "粘贴 sk- 开头的 API Key",
   "launch.model.show": "显示",
   "launch.model.hide": "隐藏",
-  "launch.model.configuredNote": "已自动使用 DeepSeek 官方地址与 DeepSeek V4 Flash 推荐配置。",
+  "launch.model.configuredNote": "已自动使用 DeepSeek 官方地址与 DeepSeek V4.1 Flash 推荐配置。",
   "launch.model.actionsLabel": "模型连接操作",
   "launch.model.connecting": "正在连接……",
   "launch.model.connect": "连接并继续",

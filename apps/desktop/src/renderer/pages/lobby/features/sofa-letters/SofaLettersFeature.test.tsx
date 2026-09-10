@@ -150,6 +150,22 @@ describe("SofaLettersFeature", () => {
     expect(screen.getByRole("heading", { name: "咨询师的信" })).toBeInTheDocument();
   });
 
+  it("cleans a saved address label in both the preview and the full letter reader", async () => {
+    useSettingsStore.setState({ profile: { displayName: "小满", background: "" } });
+    stubDesktopLetters([{ ...readyLetter, letterMd: "小满：\n\n用户称呼：小满\n\n我记得你提到最近总觉得很疲惫。" }]);
+    render(<SofaLettersFeature />);
+    await screen.findAllByText("关于最近的疲惫");
+    const preview = screen.getByRole("complementary", { name: "来信预览" });
+    expect(within(preview).getByText("小满：")).toBeInTheDocument();
+    expect(screen.queryByText(/用户称呼/)).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "打开完整信件" }));
+    const dialog = screen.getByRole("dialog", { name: "程灵写给你的信" });
+    expect(within(dialog).getAllByText("小满：")).toHaveLength(1);
+    expect(within(dialog).queryByText(/用户称呼/)).not.toBeInTheDocument();
+    expect(within(dialog).getByText("我记得你提到最近总觉得很疲惫。")).toBeInTheDocument();
+  });
+
   it("opens a ready letter directly when its row is double-clicked", async () => {
     stubDesktopLetters([readyLetter]);
     render(<SofaLettersFeature />);

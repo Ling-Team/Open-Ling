@@ -80,16 +80,16 @@ const defaultApi: ApiSettings = {
   remoteProvider: "deepseek",
   apiBaseUrl: "https://api.deepseek.com",
   apiKey: "",
-  modelName: "deepseek-v4-flash-vision-exp",
+  modelName: "deepseek-flash",
   reasoningEffort: "high",
   localApiBaseUrl: "http://127.0.0.1:11434/v1",
   localModelName: "",
   remoteApiBaseUrl: "https://api.deepseek.com",
-  remoteModelName: "deepseek-v4-flash-vision-exp",
+  remoteModelName: "deepseek-flash",
   modelAssignments: {
-    conversation: "deepseek-v4-flash-vision-exp",
-    caseConceptualization: "deepseek-v4-flash-vision-exp",
-    consultationTeam: "deepseek-v4-flash-vision-exp"
+    conversation: "deepseek-flash",
+    caseConceptualization: "deepseek-flash",
+    consultationTeam: "deepseek-flash"
   }
 };
 
@@ -128,9 +128,7 @@ export const defaultReadingAppearance: ReadingAppearanceSettings = {
 };
 
 export const defaultDeepSeekModels: ModelInfo[] = [
-  { id: "deepseek-v4-flash-vision-exp", name: "DeepSeek V4 Flash Vision (Exp)", ownedBy: "deepseek" },
-  { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash", ownedBy: "deepseek" },
-  { id: "deepseek-v4-pro", name: "DeepSeek V4 Pro", ownedBy: "deepseek" }
+  { id: "deepseek-flash", name: "DeepSeek V4.1 Flash", ownedBy: "deepseek" }
 ];
 
 const defaultProfile: UserProfileSettings = {
@@ -302,7 +300,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   loadModels: async () => {
     if (!window.lingDesktop?.settings?.listModels) {
       set({
-        availableModels: [...defaultDeepSeekModels],
         modelListStatus: "failed",
         message: settingsCopy("此功能只能在 Ling 桌面 App 中使用。", "This feature is available only in the Ling desktop app.")
       });
@@ -321,15 +318,15 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
         set({ modelListStatus: "failed", message: result.error.message });
         return;
       }
-      const isLocal = get().api.connectionKind === "local";
-      const nextModels = result.data.models.length > 0
-        ? result.data.models
-        : isLocal
-          ? (get().api.modelName ? [{ id: get().api.modelName, name: get().api.modelName }] : [])
-          : defaultDeepSeekModels;
+      if (result.data.source !== "remote") {
+        set({ modelListStatus: result.data.source === "empty" ? "empty" : "failed", message: result.data.message });
+        return;
+      }
+      // A successful response is authoritative, including an empty model list.
+      const nextModels = result.data.models;
       set((state) => ({
         availableModels: nextModels,
-        api: nextModels.some((model) => model.id === state.api.modelName)
+        api: nextModels.length === 0 || nextModels.some((model) => model.id === state.api.modelName)
           ? state.api
           : normalizeApiSettings({
               ...state.api,
@@ -346,15 +343,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
           ...state.dirtySections,
           model:
             state.dirtySections.model ||
-            !nextModels.some((model) => model.id === state.api.modelName)
+            (nextModels.length > 0 && !nextModels.some((model) => model.id === state.api.modelName))
         },
-        connectionStatus: nextModels.some((model) => model.id === state.api.modelName) ? state.connectionStatus : "idle",
-        modelListStatus:
-          result.data.source === "remote" && result.data.models.length > 0
-            ? "loaded"
-            : result.data.source === "empty"
-              ? "empty"
-              : "failed",
+        connectionStatus: nextModels.length === 0 || nextModels.some((model) => model.id === state.api.modelName) ? state.connectionStatus : "idle",
+        modelListStatus: nextModels.length > 0 ? "loaded" : "empty",
         message: result.data.message
       }));
     } catch {

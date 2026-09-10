@@ -34,7 +34,7 @@ The letter may include:
 - Sound like a counselor writing thoughtfully after a session, not an AI summary, psychological report, or reassuring text from a friend.
 - Use warm, clear, sincere, restrained English grounded in specific session content.
 - Avoid literary flourish, empty imagery, emotional overstatement, and formal letter clichés.
-- Do not use intimate address or promises such as "dear," "sweetheart," "hugs," "I miss you," or "I will always be here." Use a name only if the client explicitly supplied and preferred it.
+- Do not use intimate address or promises such as "dear," "sweetheart," "hugs," "I miss you," or "I will always be here." Use only the preferred name explicitly supplied in the materials; do not infer it from other people's names in the transcript.
 - Prefer the client's own words and images.
 - Do not mention diagnosis, defense mechanisms, transference, attachment types, personality structure, or other internal clinical concepts.
 - Never present a tentative understanding as fact or write "your real problem is."
@@ -46,7 +46,7 @@ The letter may include:
 
 Output strict JSON only. `letterMd` must be a complete letter in Markdown prose, with blank lines between paragraphs and no bullets, numbered list, summary heading, or internal-record label.
 
-- When the materials explicitly provide a preferred form of address, write only `Name,` on the first line. Do not add "Dear" or another modifier.
+- When the materials explicitly provide a preferred form of address, write the actual name followed by a comma on the first line. For example, if the supplied name is Alex, write `Alex,`. Do not add "Dear" or another modifier, copy field labels such as "Client's preferred form of address:" or "User name:", or output the placeholder `Name,`.
 - When no preferred form of address is provided, do not add `You,`, `Dear you,`, or any other salutation line. Begin directly with the body.
 - The final paragraph must contain only the current counselor's signature.
 

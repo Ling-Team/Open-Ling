@@ -66,7 +66,7 @@ export function normalizeModelReasoningEffort(
 
 export function modelSupportsImageInput(modelName: string) {
   const model = modelName.toLowerCase();
-  return model === "deepseek-v4-flash-vision-exp" ||
+  return model === "deepseek-flash" || model === "deepseek-v4-flash" || model === "deepseek-v4-flash-vision-exp" ||
     /^kimi-k2\.(?:[5-9]|[1-9]\d)/.test(model) ||
     /^qwen3\.(?:[5-9])-(?:plus|flash|max)/.test(model) ||
     /(?:^|[-_.])(?:vl|vision)(?:$|[-_.])/.test(model) ||

@@ -229,7 +229,7 @@ describe("OpenAI-compatible provider", () => {
     expect(request.signal?.aborted).toBe(true);
   });
 
-  it("enables official default high thinking for DeepSeek V4 Flash requests", async () => {
+  it.each(["deepseek-v4-flash", "deepseek-flash"])("enables official default high thinking for %s requests", async (modelName) => {
     const fetchImpl = vi.fn(async () =>
       jsonResponse({
         choices: [{ message: { content: "你好，我会慢一点想。" } }]
@@ -238,7 +238,7 @@ describe("OpenAI-compatible provider", () => {
     const provider = createOpenAICompatibleProvider({
       apiBaseUrl: "https://api.deepseek.com",
       apiKey: "sk-test",
-      modelName: "deepseek-v4-flash",
+      modelName,
       fetch: fetchImpl
     });
 
@@ -247,7 +247,7 @@ describe("OpenAI-compatible provider", () => {
     const calls = fetchImpl.mock.calls as unknown as Array<[string, RequestInit]>;
     const body = JSON.parse(calls[0][1].body as string) as Record<string, unknown>;
     expect(body).toMatchObject({
-      model: "deepseek-v4-flash",
+      model: modelName,
       thinking: { type: "enabled" },
       reasoning_effort: "high"
     });

@@ -35,7 +35,7 @@ describe("ConsultationModelConnectionPage", () => {
           apiKey: "",
           apiKeySaved: true,
           apiKeyPreview: "sk...st",
-          modelName: "deepseek-v4-flash-vision-exp"
+          modelName: "deepseek-flash"
         },
         defaultCounselorId: "chengling",
         defaultRoomThemeId: "warm-study"
@@ -53,7 +53,7 @@ describe("ConsultationModelConnectionPage", () => {
       api: expect.objectContaining({
         apiBaseUrl: "https://api.deepseek.com",
         apiKey: "sk-test",
-        modelName: "deepseek-v4-flash-vision-exp"
+        modelName: "deepseek-flash"
       })
     }));
     expect(useSettingsStore.getState().api.apiKeySaved).toBe(true);

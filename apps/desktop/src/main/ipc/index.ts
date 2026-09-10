@@ -43,6 +43,7 @@ import {
 import { createOpenAICompatibleProvider } from "../../../../../packages/core/src/providers/openAICompatibleProvider.js";
 import type { LlmProvider, LlmProviderUsage } from "../../../../../packages/core/src/providers/llmProvider.js";
 import {
+  DEFAULT_CONCEPTUALIZATION_MODEL_NAME,
   resolveConceptualizationModelSettings,
   resolveSessionLetterModelSettings
 } from "../../../../../packages/core/src/counseling/post-session/backstageModelSettings.js";
@@ -601,7 +602,7 @@ export function registerIpcHandlers(repositories?: IpcRepositories, localBackupA
     }
 
     try {
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      const headers: Record<string, string> = { "Content-Type": "application/json", "Cache-Control": "no-cache" };
       if (apiKey) headers.Authorization = `Bearer ${apiKey}`;
       const response = await fetch(buildModelsEndpoint(input.apiBaseUrl), {
         method: "GET",
@@ -614,12 +615,12 @@ export function registerIpcHandlers(repositories?: IpcRepositories, localBackupA
           source: "failed" as const
         };
       }
-      const payload = (await response.json()) as { data?: Array<{ id?: unknown; owned_by?: unknown }> };
+      const payload = (await response.json()) as { data?: Array<{ id?: unknown; name?: unknown; owned_by?: unknown }> };
       const models = (payload.data ?? [])
         .filter((model) => typeof model.id === "string" && model.id.trim().length > 0)
         .map((model) => ({
           id: (model.id as string).trim(),
-          name: formatModelName((model.id as string).trim()),
+          name: typeof model.name === "string" && model.name.trim() ? model.name.trim() : (model.id as string).trim(),
           ownedBy: typeof model.owned_by === "string" ? model.owned_by : undefined
         }));
 
@@ -985,7 +986,7 @@ export function registerIpcHandlers(repositories?: IpcRepositories, localBackupA
     const settings = await repositories.settings.read();
     const letterModelName = settings
       ? resolveSessionLetterModelSettings(settings).modelName
-      : "deepseek-v4-pro";
+      : DEFAULT_CONCEPTUALIZATION_MODEL_NAME;
     const markedPending = await repositories.sessionLetters.markPendingForEndedCycle({
       id: `session-letter-${session.id}`,
       sessionId: session.id,
@@ -1399,7 +1400,7 @@ async function createAndQueueConsultationPreparation(
   const settings = await repositories.settings.read();
   const modelName = settings
     ? resolveConceptualizationModelSettings(settings).modelName
-    : "deepseek-v4-pro";
+    : DEFAULT_CONCEPTUALIZATION_MODEL_NAME;
   const now = new Date().toISOString();
   const preparation: ConsultationPreparation = {
     id: `consultation-preparation-${session.id}-${Date.now()}`,
@@ -1471,7 +1472,7 @@ async function performPostSessionArtifactEnsure(
     const settings = await repositories.settings.read();
     const letterModelName = settings
       ? resolveSessionLetterModelSettings(settings).modelName
-      : "deepseek-v4-pro";
+      : DEFAULT_CONCEPTUALIZATION_MODEL_NAME;
     const markedPending = await repositories.sessionLetters.markPendingForEndedCycle({
       id: `session-letter-${session.id}`,
       sessionId: session.id,
@@ -1628,7 +1629,7 @@ async function updateSessionLetter(
   const settings = await repositories.settings.read();
   const letterModelName = settings
     ? resolveSessionLetterModelSettings(settings).modelName
-    : "deepseek-v4-pro";
+    : DEFAULT_CONCEPTUALIZATION_MODEL_NAME;
   const failureBase = {
     id: `session-letter-${sessionId}`,
     sessionId,
@@ -1880,16 +1881,6 @@ function buildModelsEndpoint(apiBaseUrl: string) {
 
 function requiresApiKey(api: Pick<ApiSettings, "connectionKind">) {
   return api.connectionKind !== "local";
-}
-
-function formatModelName(id: string) {
-  if (id === "deepseek-v4-flash") return "DeepSeek V4 Flash";
-  if (id === "deepseek-v4-flash-vision-exp") return "DeepSeek V4 Flash Vision (Exp)";
-  if (id === "deepseek-v4-pro") return "DeepSeek V4 Pro";
-  return id
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
 }
 
 function recordModelUsage(

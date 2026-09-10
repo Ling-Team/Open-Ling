@@ -695,7 +695,7 @@ describe("Ling 首屏", () => {
 
     await waitFor(() => expect(streamMessage).toHaveBeenCalled());
     const request = vi.mocked(streamMessage).mock.calls[0][0];
-    expect(request.api.modelName).toBe("deepseek-v4-flash-vision-exp");
+    expect(request.api.modelName).toBe("deepseek-flash");
     expect(request.imageInputs).toEqual([
       expect.objectContaining({ name: "photo.png", mimeType: "image/png", dataUrl: expect.stringMatching(/^data:image\/png;base64,/) })
     ]);

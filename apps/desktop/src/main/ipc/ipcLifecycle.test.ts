@@ -341,7 +341,7 @@ describe("main IPC consultation lifecycle boundaries", () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({
       data: [
         { id: "deepseek-v4-flash", owned_by: "deepseek" },
-        { id: "future-provider-model", owned_by: "future-provider" },
+        { id: "future-provider-model", name: " Official future model ", owned_by: "future-provider" },
         { id: "   " },
         { owned_by: "missing-id" }
       ]
@@ -356,12 +356,13 @@ describe("main IPC consultation lifecycle boundaries", () => {
       ok: true,
       data: {
         models: [
-          { id: "deepseek-v4-flash", ownedBy: "deepseek" },
-          { id: "future-provider-model", ownedBy: "future-provider" }
+          { id: "deepseek-v4-flash", name: "deepseek-v4-flash", ownedBy: "deepseek" },
+          { id: "future-provider-model", name: "Official future model", ownedBy: "future-provider" }
         ],
         source: "remote"
       }
     });
+    expect(fetch).toHaveBeenCalledWith("https://models.example.com/v1/models", expect.objectContaining({ headers: expect.objectContaining({ "Cache-Control": "no-cache" }) }));
   });
 
   it("discovers local models without requiring or sending an API key", async () => {
@@ -385,7 +386,7 @@ describe("main IPC consultation lifecycle boundaries", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "http://127.0.0.1:11434/v1/models",
-      expect.objectContaining({ headers: { "Content-Type": "application/json" } })
+      expect.objectContaining({ headers: { "Content-Type": "application/json", "Cache-Control": "no-cache" } })
     );
   });
 

@@ -367,6 +367,11 @@ describe("SettingsSystemPage profile settings", () => {
       }
     }));
     vi.stubGlobal("lingDesktop", { settings: { deleteApiKey, listModels, read, save, testConnection } });
+    // Custom choices remain available even though Pro is no longer a built-in default.
+    useSettingsStore.setState({ availableModels: [
+      { id: "deepseek-v4-flash", name: "DeepSeek V4 Flash", ownedBy: "deepseek" },
+      { id: "deepseek-v4-pro", name: "DeepSeek V4 Pro", ownedBy: "deepseek" }
+    ] });
 
     render(<SettingsSystemPage />);
     await waitFor(() => expect(read).toHaveBeenCalled());
@@ -376,7 +381,7 @@ describe("SettingsSystemPage profile settings", () => {
     expect(screen.getByRole("button", { name: /DeepSeek 推荐/ })).toBeInTheDocument();
     expect(screen.queryByText("后续开放")).not.toBeInTheDocument();
     expect(screen.getByLabelText("默认心理咨询对话模型")).toHaveValue("deepseek-v4-flash");
-    expect(screen.getAllByRole("option", { name: "DeepSeek V4 Flash（稳定版）（deepseek-v4-flash）" })).toHaveLength(3);
+    expect(screen.getAllByRole("option", { name: "DeepSeek V4 Flash（deepseek-v4-flash）" })).toHaveLength(3);
     await waitFor(() => expect(document.getElementById("model-reasoning-effort")).toHaveValue("high"));
     expect(screen.getByRole("button", { name: "读取可用模型" })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "咨询结束后的模型用途" })).toBeInTheDocument();
@@ -470,7 +475,7 @@ describe("SettingsSystemPage profile settings", () => {
     expect(screen.getByRole("heading", { name: "OpenAI 兼容服务" })).toBeInTheDocument();
     expect(screen.getByLabelText("默认心理咨询对话模型")).toHaveValue("future-provider-model");
     expect(screen.getByRole("option", { name: "跟随会谈模型（推荐）" })).toBeInTheDocument();
-    expect(screen.queryByRole("option", { name: "默认 DeepSeek V4 Pro（推荐）" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("option", { name: "默认 DeepSeek V4.1 Flash（推荐）" })).not.toBeInTheDocument();
   });
 
   it("saves whether each new session brings previous counselor understanding into context and explains the switch", async () => {

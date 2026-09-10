@@ -133,7 +133,7 @@ describe("首次启动引导", () => {
           apiKey: "",
           apiKeySaved: true,
           apiKeyPreview: "sk...st",
-          modelName: "deepseek-v4-flash-vision-exp"
+          modelName: "deepseek-flash"
         },
         defaultCounselorId: "chengling",
         defaultRoomThemeId: "warm-study"
@@ -158,7 +158,7 @@ describe("首次启动引导", () => {
       api: expect.objectContaining({
         apiBaseUrl: "https://api.deepseek.com",
         apiKey: "sk-test",
-        modelName: "deepseek-v4-flash-vision-exp"
+        modelName: "deepseek-flash"
       })
     }));
     expect(testConnection).toHaveBeenCalledTimes(1);
